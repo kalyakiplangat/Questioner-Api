@@ -1,12 +1,12 @@
-from flask import request, jsonify, make_reponse
+from flask import request, jsonify, make_response
 from flask import Blueprint
 
 #local imports 
-from ..models.meetup_model import Meetups, meetup
+from ..models.meetup_model import Meetups, meetups
 
-meetuprequest = Blueprint('meetuprequest', __name__, url_prefix='api/v1')
+meetupre = Blueprint('meetupre', __name__, url_prefix='/api/v1')
 
-@meetuprequest.route('/meetup', methods=['POST'])
+@meetupre.route('/meetup', methods=['POST'])
 def post():
     if request.json:
         topic = request.json['topic']
@@ -19,10 +19,10 @@ def post():
         results.status_code = 201
         return results
 
-        else:
-            return make_reponse(jsonify({'message':'invalid request'}), 400 )
+    else:
+        return make_reponse(jsonify({'message':'invalid request'}), 400 )
 
-@meetuprequest.route('meetup/upcoming', methods=['GET'])
+@meetupre.route('/meetup/upcoming', methods=['GET'])
 def get():
     """Get upcoming meetups """
     get_upcoming = {
@@ -32,7 +32,7 @@ def get():
     results = jsonify(get_upcoming)
     return results
 
-@meetup.route('meetup/<int:id>', methods=['GET'])
+@meetupre.route('/meetup/<int:id>', methods=['GET'])
 def get_specific_meetup(id):
     '''Get a specific meetup'''
     specific_meetup = Meetups.find(id)
@@ -44,10 +44,10 @@ def get_specific_meetup(id):
         results = jsonify(meetup)
         results.status_code = 200
         return results
-        else:
-            return make_reponse(jsonify({'message':'Resource Not found'}), 404)
+    else:
+        return make_reponse(jsonify({'message':'Resource Not found'}), 404)
 
-@meetuprequest.route('meetup/<int:id>/rsvp', methods=['POST'])
+@meetupre.route('/meetup/<int:id>/rsvp', methods=['POST'])
 def rsvp(id):
     '''RSVP a meetup'''
     if request.json:
