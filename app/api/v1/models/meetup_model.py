@@ -1,49 +1,51 @@
 import datetime
 
+
 meetups = []
-rsvp = []
+rsvps = []
 
 
 class Meetups(object):
-    """Meetup model """
+    '''Meetup model handles the business logic for the meetups'''
+    id = len(meetups)+1
+    createdOn = str(datetime.date.today())
 
     def __init__(self):
-        self.data = meetups
-
-    id = len(meetups)+1
-    dateon = str(datetime.date.today())
+        pass
 
     @classmethod
-    def create_meetup(self, topic, location, images, dateon, tags):
-        '''Create meetup dictionry'''
+    def create_meetup(self, location, images, topic,
+                      happeningOn, tagsist):
+        '''creates meetup'''
         meetup = {
             'id': self.id,
-            'topic': self.topic,
-            'location': self.location,
-            'image': self.images,
-            'dateon': self.dateon,
-            'tags': self.tags
+            'createdOn': self.createdOn,
+            'topic': topic,
+            'location': location,
+            'images': images,
+            'happeningOn': happeningOn,
+            'tags': tags
         }
         meetups.append(meetup)
-        return meetups
+        return meetup
 
     @classmethod
-    def rsvp_meetup(self, user_id, meetup_id):
-        '''models to RSVP a meetup'''
-        rsvp_dict = {
-            'user_id': self.user_id,
-            'meetup_id': self.meetup_id,
-            'scheduled': True
+    def add_rsvp(self, userid, meetupid):
+        '''Adds a RSVP'''
+        rsvp = {
+            'userid': userid,
+            'meetupid': meetupid,
+            'isScheduled': True
         }
-        rsvp.append(rsvp_dict)
-        return rsvp
+        rsvps.append(rsvp)
+        meetup = self.find(meetupid)
+        return meetup
 
     @classmethod
-    def find_meetup(self, id):
-        '''A function to find a meetup'''
-        try:
+    def find(self, id):
+        '''Find a particular meetup, expects id'''
+        if iter(meetups):
             for meetup in meetups:
                 if meetup['id'] == id:
                     return meetup
-        except:
             return None

@@ -1,10 +1,9 @@
-
 from flask import Flask
 
 from instance.config import app_config
 
-from .api.v1.views.meetupview import meetupreq
-from .api.v1.views.questionview import ques
+from .api.v1.views.meetup_view import meetupreq
+#from .api.v1.views.questionview import ques
 
 
 def create_app(config):
@@ -16,5 +15,5 @@ def create_app(config):
     app.config.from_pyfile('config.py', silent=True)
 
     app.register_blueprint(meetupreq)
-    app.register_blueprint(ques)
+    #app.register_blueprint(ques)
     return app

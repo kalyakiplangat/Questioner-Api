@@ -1,69 +1,72 @@
 from flask import request, jsonify, make_response
 from flask import Blueprint
+from werkzeug.exceptions import BadRequest
 
-#local imports 
 from ..models.meetup_model import Meetups, meetups
 
-meetupre = Blueprint('meetupre', __name__, url_prefix='/api/v1')
+meetupreq = Blueprint('meetupreq', __name__, url_prefix='/api/v1')
 
-@meetupre.route('/meetup', methods=['POST'])
+
+@meetupreq.route('/meetups', methods=['POST'])
 def post():
+    '''create meetup endup'''
     if request.json:
         topic = request.json['topic']
         location = request.json['location']
         images = request.json['images']
-        dateon = request.json['dateon']
+        happeningOn = request.json['happeningOn']
         tags = request.json['tags']
 
-        results = jsonify(Meetups.create_meetup(topic, location, images, dateon, tags))
-        results.status_code = 201
-        return results
-
+        response = jsonify(Meetups().create_meetup(location, images, topic,
+                           happeningOn, tags))
+        response.status_code = 201
+        return response
     else:
-        return make_reponse(jsonify({'message':'invalid request'}), 400 )
+        return make_response(jsonify({'message': 'invalid request type'}), 400)
 
-@meetupre.route('/meetup/upcoming', methods=['GET'])
+
+@meetupreq.route('/meetups/upcoming', methods=['GET'])
 def get():
-    """Get upcoming meetups """
-    get_upcoming = {
+    '''Get all upcoming meetups'''
+    upcomingmeetups = {
         'status': 200,
-        'data': meetup
-        }
-    results = jsonify(get_upcoming)
-    return results
+        'data': meetups
+    }
 
-@meetupre.route('/meetup/<int:id>', methods=['GET'])
-def get_specific_meetup(id):
-    '''Get a specific meetup'''
-    specific_meetup = Meetups.find(id)
-    if specific_meetup:
+    response = jsonify(upcomingmeetups)
+    response.status_code = 200
+    return response
+
+
+@meetupreq.route('/meetups/<int:id>', methods=['GET'])
+def get_by_id(id):
+    '''Get a specific meetup with a particular ID'''
+    meetup_obj = Meetups.find(id)
+    if meetup_obj:
         meetup = {
             'status': 200,
-            'data': [specific_meetup]
-            }
-        results = jsonify(meetup)
-        results.status_code = 200
-        return results
-    else:
-        return make_reponse(jsonify({'message':'Resource Not found'}), 404)
+            'data': [meetup_obj]
+        }
+        response = jsonify(meetup)
+        response.status_code = 200
+        return response
+    return make_response(jsonify({"message": "Not Found"}), 404)
 
-@meetupre.route('/meetup/<int:id>/rsvp', methods=['POST'])
-def rsvp(id):
-    '''RSVP a meetup'''
+
+@meetupreq.route('/meetups/<int:id>/rsvps', methods=['POST'])
+def post_rsvp(id):
     if request.json:
         if Meetups.find(id):
-            user_id = request.json['user_id']
-            meetup = Meetups.rsvp_meetup(user_id, id)
-            meetup_resp = {
+            userid = request.json['userid']
+            meetup = Meetups.add_rsvp(userid, id)
+            meetup_obj = {
                 'status': 201,
                 'data': [meetup]
             }
-            results = jsonify(meetup_resp)
-            results.status_code = 201
-            return results
+            response = jsonify(meetup_obj)
+            response.status_code = 201
+            return response
         else:
-            return make_reponse(jsonify({'message':'Resource not found'}), 404)
+            return make_response(jsonify({"message": "Not Found"}), 404)
     else:
-        return make_reponse(jsonify({'message':'Invalid request type'}), 400)
-
-
+        return make_response(jsonify({'message': 'invalid request type'}), 400)
