@@ -15,7 +15,7 @@ class Meetups(object):
 
     @classmethod
     def create_meetup(self, location, images, topic,
-                      happeningOn, tagsist):
+                      happeningOn, tagslist):
         '''creates meetup'''
         meetup = {
             'id': self.id,

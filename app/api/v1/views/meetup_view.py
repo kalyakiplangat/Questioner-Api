@@ -7,7 +7,7 @@ from ..models.meetup_model import Meetups, meetups
 meetupreq = Blueprint('meetupreq', __name__, url_prefix='/api/v1')
 
 
-@meetupreq.route('/meetups', methods=['POST'])
+@meetupreq.route('/meetups', methods=['GET','POST'])
 def post():
     '''create meetup endup'''
     if request.json:
@@ -17,8 +17,7 @@ def post():
         happeningOn = request.json['happeningOn']
         tags = request.json['tags']
 
-        response = jsonify(Meetups().create_meetup(location, images, topic,
-                           happeningOn, tags))
+        response = jsonify(Meetups().create_meetup(location, images, topic, happeningOn, tags))
         response.status_code = 201
         return response
     else:
